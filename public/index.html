@@ -1,0 +1,525 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --g:#00C48C;--gd:#009E72;--gp:#E6FAF5;--gm:#B3F0DC;
+  --bl:#1A6BFF;--bp:#EAF0FF;--am:#F59E0B;--ap:#FEF3C7;
+  --ink:#0D1B2A;--i2:#3A4A5C;--i3:#7A8B9A;
+  --sf:#F4F7FA;--wh:#FFFFFF;--bd:#E2E8F0;
+}
+body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
+  display:flex;align-items:center;justify-content:center;padding:24px 16px;color:var(--ink);}
+
+/* DEVICE */
+.device{width:420px;background:var(--ink);border-radius:54px;padding:14px;
+  box-shadow:0 30px 80px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.07);flex-shrink:0;position:relative}
+.notch{width:110px;height:32px;background:var(--ink);border-radius:0 0 22px 22px;
+  position:absolute;top:14px;left:50%;transform:translateX(-50%);z-index:10}
+.screen-wrap{background:var(--sf);border-radius:40px;height:840px;overflow:hidden;
+  display:flex;flex-direction:column;position:relative}
+
+/* SCREENS */
+.scr{position:absolute;inset:0;display:flex;flex-direction:column;
+  opacity:0;transform:translateX(16px);pointer-events:none;transition:opacity .25s,transform .25s}
+.scr.on{opacity:1;transform:translateX(0);pointer-events:all}
+
+/* STATUS BAR */
+.sbar{display:flex;justify-content:space-between;align-items:center;
+  padding:38px 18px 8px;background:var(--wh);font-size:11px;font-weight:600;color:var(--ink);flex-shrink:0}
+
+/* BOTTOM NAV */
+.bnav{background:var(--wh);border-top:1px solid var(--bd);display:flex;padding:8px 0 14px;flex-shrink:0}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;opacity:.35;transition:opacity .15s}
+.bni.on{opacity:1}
+.bni svg{width:20px;height:20px}
+.bni span{font-size:9px;font-weight:500}
+.bni.on svg,.bni.on span{color:var(--gd)}
+
+/* SCROLL */
+.sa{flex:1;overflow-y:auto;scrollbar-width:none}
+.sa::-webkit-scrollbar{display:none}
+
+/* HOME */
+.hhdr{background:linear-gradient(135deg,#0D1B2A,#1A3A5C);padding:48px 18px 22px;color:#fff;flex-shrink:0}
+.hhdr .gr{font-size:12px;opacity:.55;margin-bottom:3px}
+.hhdr h2{font-family:'DM Serif Display',serif;font-size:22px;font-weight:400;margin-bottom:14px}
+.hcard{background:rgba(255,255,255,.1);border-radius:14px;padding:14px;
+  border:1px solid rgba(255,255,255,.12);display:flex;justify-content:space-between;align-items:center}
+.hcard .lb{font-size:10px;opacity:.55;margin-bottom:2px}
+.hcard .vl{font-size:16px;font-weight:600}
+.hbadge{background:var(--g);color:var(--ink);font-size:10px;font-weight:700;padding:4px 10px;border-radius:50px}
+.stitle{font-size:11px;font-weight:600;color:var(--i3);text-transform:uppercase;
+  letter-spacing:.08em;padding:16px 18px 8px}
+.abanner{margin:0 14px 10px;background:var(--ap);border:1px solid #FCD34D;border-radius:10px;
+  padding:11px 13px;display:flex;gap:9px;align-items:flex-start;cursor:pointer}
+.adot{width:7px;height:7px;background:var(--am);border-radius:50%;margin-top:3px;flex-shrink:0;
+  animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(245,158,11,.4)}50%{box-shadow:0 0 0 5px rgba(245,158,11,0)}}
+.abt{font-size:12px;font-weight:600;color:#92400E}
+.abs{font-size:11px;color:#B45309;margin-top:2px}
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:0 14px}
+.qac{background:var(--wh);border-radius:14px;padding:14px;border:1px solid var(--bd);
+  cursor:pointer;transition:transform .15s;box-shadow:0 2px 8px rgba(13,27,42,.07)}
+.qac:active{transform:scale(.97)}
+.qai{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:18px;margin-bottom:8px}
+.qac h4{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.qac p{font-size:10px;color:var(--i3);line-height:1.4}
+.acard{margin:0 14px 10px;background:var(--wh);border-radius:14px;padding:14px;
+  border:1px solid var(--bd);box-shadow:0 2px 8px rgba(13,27,42,.07)}
+.achead{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:10px}
+.acsp{font-size:14px;font-weight:600}
+.acdc{font-size:11px;color:var(--i3);margin-top:2px}
+.acbg{font-size:10px;font-weight:600;padding:3px 9px;border-radius:50px;background:var(--gp);color:var(--gd)}
+.acdt{display:flex;gap:14px}
+.acdi{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--i2)}
+.acdi svg{width:12px;height:12px;opacity:.5}
+
+/* CHAT */
+.chdr{background:var(--wh);padding:48px 14px 12px;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:9px;flex-shrink:0}
+.bbtn{width:30px;height:30px;background:var(--sf);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;flex-shrink:0}
+.ainfo{flex:1}
+.ainfo .nm{font-size:14px;font-weight:600}
+.ainfo .st{font-size:10px;color:var(--gd);display:flex;align-items:center;gap:3px}
+.sdot{width:5px;height:5px;background:var(--g);border-radius:50%;animation:pulse 2s infinite}
+.aavt{width:34px;height:34px;background:linear-gradient(135deg,var(--g),#00A878);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;scrollbar-width:none}
+.msgs::-webkit-scrollbar{display:none}
+.msg{max-width:82%;animation:fu .25s ease}
+@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.msg.bot{align-self:flex-start}
+.msg.usr{align-self:flex-end}
+.mb{padding:9px 13px;border-radius:14px;font-size:12px;line-height:1.55}
+.msg.bot .mb{background:var(--wh);border:1px solid var(--bd);border-bottom-left-radius:3px;color:var(--ink)}
+.msg.usr .mb{background:var(--g);color:#fff;border-bottom-right-radius:3px}
+.mt{font-size:9px;color:var(--i3);margin-top:2px;padding:0 2px}
+.msg.usr .mt{text-align:right}
+.qrs{display:flex;flex-wrap:wrap;gap:5px;padding:0 14px 8px;flex-shrink:0}
+.qr{background:var(--wh);border:1.5px solid var(--g);color:var(--gd);font-size:11px;font-weight:500;
+  padding:6px 12px;border-radius:50px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
+.qr:active{background:var(--gp)}
+.cinp{padding:9px 14px;background:var(--sf);border-top:1px solid var(--bd);
+  display:flex;gap:7px;align-items:center;flex-shrink:0}
+.ci{flex:1;background:var(--wh);border:1px solid var(--bd);border-radius:50px;padding:8px 14px;
+  font-size:12px;font-family:'DM Sans',sans-serif;outline:none;color:var(--ink)}
+.ci:focus{border-color:var(--g)}
+.sb{width:34px;height:34px;background:var(--g);border:none;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.sb:disabled{opacity:.5;cursor:not-allowed}
+.acfm{background:var(--gp);border:1.5px solid var(--gm);border-radius:14px;padding:13px;margin-top:3px}
+.acft{font-size:12px;font-weight:600;color:var(--gd);margin-bottom:9px}
+.acr{display:flex;align-items:center;gap:7px;font-size:11px;color:var(--i2);margin-bottom:5px}
+.acr svg{width:13px;height:13px;color:var(--gd);flex-shrink:0}
+.cbts{display:flex;gap:7px;margin-top:10px}
+.btc{flex:1;background:var(--g);color:#fff;border:none;border-radius:50px;
+  padding:8px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer}
+.btx{flex:1;background:transparent;color:var(--i3);border:1px solid var(--bd);border-radius:50px;
+  padding:8px;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.cur{animation:blink .6s step-end infinite;color:var(--g)}
+
+/* NOTIF */
+.nhdr{background:var(--wh);padding:48px 18px 14px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.nhdr h2{font-size:18px;font-weight:600}
+.nhdr p{font-size:11px;color:var(--i3);margin-top:2px}
+.ni{background:var(--wh);border-radius:14px;padding:13px;border:1px solid var(--bd);
+  display:flex;gap:10px;box-shadow:0 2px 8px rgba(13,27,42,.07);cursor:pointer;transition:transform .15s;margin:0 14px 9px}
+.ni:active{transform:scale(.98)}
+.ni.urg{border-left:3px solid var(--g)}
+.ni.alt{border-left:3px solid var(--am)}
+.ni.inf{border-left:3px solid var(--bl)}
+.nic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.nic.gn{background:var(--gp)}.nic.am{background:var(--ap)}.nic.bl{background:var(--bp)}
+.nb{flex:1}.nt{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.nd{font-size:11px;color:var(--i3);line-height:1.4}.ntm{font-size:10px;color:var(--i3);margin-top:3px}
+.na{display:inline-block;margin-top:7px;background:var(--gp);color:var(--gd);
+  font-size:10px;font-weight:600;padding:3px 9px;border-radius:50px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+.wp{margin:0 14px 10px;background:var(--wh);border-radius:14px;padding:14px;border:1px solid var(--bd)}
+.wph{display:flex;justify-content:space-between;margin-bottom:10px}
+.wpt{font-size:12px;font-weight:600}.wpd{font-size:20px;font-weight:600;color:var(--gd)}
+.wps{font-size:10px;color:var(--i3)}
+.ptr{height:7px;background:var(--sf);border-radius:50px;overflow:hidden;margin-bottom:5px}
+.ptf{height:100%;background:linear-gradient(90deg,var(--g),var(--gd));border-radius:50px;
+  width:65%;animation:fi 1.2s ease-out}
+@keyframes fi{from{width:0}to{width:65%}}
+.ptl{display:flex;justify-content:space-between;font-size:9px;color:var(--i3)}
+
+/* POST */
+.pohdr{background:linear-gradient(135deg,#0D1B2A,#1A3A5C);padding:48px 18px 18px;color:#fff;flex-shrink:0}
+.poht{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.poht h2{font-size:14px;font-weight:600;flex:1}
+.cs{background:rgba(255,255,255,.1);border-radius:10px;padding:11px;
+  display:flex;gap:10px;border:1px solid rgba(255,255,255,.1)}
+.csi{flex:1;text-align:center}.csv{font-size:14px;font-weight:600}.csl{font-size:9px;opacity:.55;margin-top:1px}
+.rc{background:var(--wh);border-radius:14px;border:1px solid var(--bd);
+  overflow:hidden;margin:0 14px 9px;box-shadow:0 2px 8px rgba(13,27,42,.07)}
+.rch{padding:12px 14px 9px;display:flex;justify-content:space-between;align-items:center}
+.rct{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600}
+.rci{width:30px;height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px}
+.rci.gn{background:var(--gp)}.rci.bl{background:var(--bp)}.rci.am{background:var(--ap)}
+.rcbg{font-size:10px;font-weight:600;padding:3px 8px;border-radius:50px}
+.rcbg.nw{background:var(--gp);color:var(--gd)}.rcbg.rd{background:var(--bp);color:var(--bl)}
+.rcb{padding:0 14px 12px;border-top:1px solid var(--bd);margin-top:3px}
+.lr{display:flex;justify-content:space-between;align-items:center;padding:7px 0;
+  border-bottom:1px solid var(--bd);font-size:11px}
+.lr:last-child{border-bottom:none}
+.ln{color:var(--i2)}.lv{font-weight:600;color:var(--ink)}
+.lv.ok{color:var(--gd)}.lv.wn{color:var(--am)}
+.ri{display:flex;align-items:flex-start;gap:9px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:11px}
+.ri:last-child{border-bottom:none}
+.rd2{width:7px;height:7px;background:var(--g);border-radius:50%;margin-top:3px;flex-shrink:0}
+.rn{font-weight:600;color:var(--ink)}.rs{color:var(--i3)}
+.bdl{width:100%;background:var(--ink);color:#fff;border:none;border-radius:50px;padding:10px;
+  font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer;margin-top:9px;
+  display:flex;align-items:center;justify-content:center;gap:5px}
+.fab{position:absolute;bottom:72px;right:14px;width:48px;height:48px;background:var(--g);
+  border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;
+  cursor:pointer;box-shadow:0 4px 16px rgba(0,196,140,.4);border:none;
+  animation:bob 3s ease-in-out infinite;z-index:10}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(16px);
+  background:var(--ink);color:#fff;padding:9px 18px;border-radius:50px;font-size:12px;
+  font-weight:500;opacity:0;transition:all .3s;white-space:nowrap;z-index:1000;pointer-events:none}
+.toast.on{opacity:1;transform:translateX(-50%) translateY(0)}
+
+@media(max-width:480px){.device{width:100%;max-width:420px}}
+</style>
+</head>
+<body>
+<div class="device">
+  <div class="notch"></div>
+  <div class="screen-wrap">
+
+    <!-- HOME -->
+    <div class="scr on" id="s-home">
+      <div class="hhdr">
+        <div class="gr">Buenos días,</div>
+        <h2>Roberto Casas 👋</h2>
+        <div class="hcard">
+          <div><div class="lb">N.° de asegurado</div><div class="vl">EsSalud · 07-42315</div></div>
+          <div class="hbadge">Activo</div>
+        </div>
+      </div>
+      <div class="sa">
+        <div class="stitle">Alertas</div>
+        <div class="abanner" onclick="go2('notif')">
+          <div class="adot"></div>
+          <div><div class="abt">Slot disponible — Cardiología</div>
+          <div class="abs">Se liberó una cita para mañana a las 10:30 am. ¡Tómala antes de que se ocupe!</div></div>
+        </div>
+        <div class="stitle">Próxima cita</div>
+        <div class="acard">
+          <div class="achead">
+            <div><div class="acsp">Cardiología</div><div class="acdc">Dr. Luis Vargas Ríos</div></div>
+            <div class="acbg">Confirmada</div>
+          </div>
+          <div class="acdt">
+            <div class="acdi"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Lun 9 Jun · 10:30 am</div>
+            <div class="acdi"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Pab. C — Cons. 214</div>
+          </div>
+        </div>
+        <div class="stitle">Accesos rápidos</div>
+        <div class="qa">
+          <div class="qac" onclick="go2('agenda')"><div class="qai" style="background:#E6FAF5">📅</div><h4>Nueva cita</h4><p>Agenda con IA</p></div>
+          <div class="qac" onclick="go2('post')"><div class="qai" style="background:#EAF0FF">🧪</div><h4>Mis resultados</h4><p>Laboratorio y recetas</p></div>
+          <div class="qac" onclick="go2('notif')"><div class="qai" style="background:#FEF3C7">🔔</div><h4>Notificaciones</h4><p>3 alertas nuevas</p></div>
+          <div class="qac" onclick="toast('Historial clínico completo')"><div class="qai" style="background:#FEE2E2">📋</div><h4>Mi historial</h4><p>Historia clínica</p></div>
+        </div>
+        <div style="height:20px"></div>
+      </div>
+      <div class="bnav">
+        <div class="bni on" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
+        <div class="bni" onclick="go2('agenda')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni" onclick="go2('notif')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
+        <div class="bni" onclick="go2('post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
+      </div>
+    </div>
+
+    <!-- AGENDA / CHAT -->
+    <div class="scr" id="s-agenda" style="display:flex;flex-direction:column">
+      <div class="chdr">
+        <button class="bbtn" onclick="go2('home')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div class="ainfo"><div class="nm">Asistente RebaDigital</div><div class="st"><span class="sdot"></span>En línea · IA activada</div></div>
+        <div class="aavt">🤖</div>
+      </div>
+      <div class="msgs" id="msgs">
+        <div class="msg bot"><div class="mb">¡Hola Roberto! Soy tu asistente de salud. Puedo ayudarte a <strong>agendar una cita</strong> o resolver tus dudas. ¿En qué te ayudo hoy?</div><div class="mt">09:14 am</div></div>
+      </div>
+      <div class="qrs" id="qrs">
+        <button class="qr" onclick="reply('Necesito una cita de cardiología')">❤️ Cardiología</button>
+        <button class="qr" onclick="reply('Necesito medicina general')">🩺 Medicina general</button>
+        <button class="qr" onclick="reply('¿Cuándo es mi cita?')">📅 Mi próxima cita</button>
+        <button class="qr" onclick="reply('¿Qué medicamentos tomo?')">💊 Mis medicamentos</button>
+      </div>
+      <div class="cinp">
+        <input class="ci" id="ci" placeholder="Escribe tu consulta..." onkeydown="if(event.key==='Enter'&&!sending)send()">
+        <button class="sb" id="sbtn" onclick="send()"><svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+      <div class="bnav">
+        <div class="bni" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
+        <div class="bni on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni" onclick="go2('notif')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
+        <div class="bni" onclick="go2('post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
+      </div>
+    </div>
+
+    <!-- NOTIF -->
+    <div class="scr" id="s-notif">
+      <div class="nhdr"><h2>Notificaciones</h2><p>3 alertas nuevas · Actualizado hace 2 min</p></div>
+      <div class="sa">
+        <div class="stitle" style="padding-top:10px">Progreso de tu cita</div>
+        <div class="wp" style="margin:0 14px 10px">
+          <div class="wph"><div><div class="wpt">Cita de Cardiología</div><div class="wps">Dr. Vargas · Solicitada hace 28 días</div></div><div><div class="wpd">3</div><div class="wps">días restantes</div></div></div>
+          <div class="ptr"><div class="ptf"></div></div>
+          <div class="ptl"><span>Solicitud enviada</span><span>Cita confirmada ✓</span></div>
+        </div>
+        <div class="stitle">Alertas recientes</div>
+        <div class="ni urg"><div class="nic gn">⚡</div><div class="nb"><div class="nt">Slot liberado — ¡Cita disponible!</div><div class="nd">Se liberó una cita de Cardiología para mañana lunes 10 de junio a las 10:30 am con el Dr. Vargas.</div><div class="ntm">hace 5 minutos</div><button class="na" onclick="toast('✅ Cita del 10 Jun confirmada')">Tomar cita ahora →</button></div></div>
+        <div class="ni alt"><div class="nic am">📋</div><div class="nb"><div class="nt">Resultado de laboratorio disponible</div><div class="nd">Tu hemograma completo del 3 de junio ya está listo para revisar en la app.</div><div class="ntm">hace 2 horas</div><button class="na" onclick="go2('post')">Ver resultados →</button></div></div>
+        <div class="ni inf"><div class="nic bl">💊</div><div class="nb"><div class="nt">Receta electrónica generada</div><div class="nd">Tu receta del Dr. Vargas del 3 Jun está disponible. Válida hasta el 3 de julio.</div><div class="ntm">hace 1 día</div><button class="na" onclick="go2('post')">Ver receta →</button></div></div>
+        <div style="height:16px"></div>
+      </div>
+      <div class="bnav">
+        <div class="bni" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
+        <div class="bni" onclick="go2('agenda')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
+        <div class="bni" onclick="go2('post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
+      </div>
+    </div>
+
+    <!-- POST -->
+    <div class="scr" id="s-post">
+      <div class="pohdr">
+        <div class="poht">
+          <button class="bbtn" style="background:rgba(255,255,255,.1);border:none" onclick="go2('home')"><svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+          <h2>Post-consulta · 3 Jun 2025</h2>
+        </div>
+        <div class="cs">
+          <div class="csi"><div class="csv">Dr. Vargas</div><div class="csl">Médico</div></div>
+          <div class="csi"><div class="csv">Cardiología</div><div class="csl">Especialidad</div></div>
+          <div class="csi"><div class="csv">2 items</div><div class="csl">Pendientes</div></div>
+        </div>
+      </div>
+      <div class="sa">
+        <div style="height:12px"></div>
+        <div class="rc">
+          <div class="rch"><div class="rct"><div class="rci gn">🧪</div>Resultados de laboratorio</div><span class="rcbg nw">Nuevo</span></div>
+          <div class="rcb">
+            <div class="lr"><span class="ln">Hemoglobina</span><span class="lv ok">14.2 g/dL ✓</span></div>
+            <div class="lr"><span class="ln">Colesterol LDL</span><span class="lv wn">148 mg/dL ⚠</span></div>
+            <div class="lr"><span class="ln">Glucosa</span><span class="lv ok">94 mg/dL ✓</span></div>
+            <div class="lr"><span class="ln">Presión arterial</span><span class="lv ok">120/80 mmHg ✓</span></div>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rch"><div class="rct"><div class="rci bl">💊</div>Receta electrónica</div><span class="rcbg rd">Lista</span></div>
+          <div class="rcb">
+            <div class="ri"><div class="rd2"></div><div><div class="rn">Atorvastatina 20 mg</div><div class="rs">1 tableta cada noche · 30 días</div></div></div>
+            <div class="ri"><div class="rd2"></div><div><div class="rn">Ácido acetilsalicílico 100 mg</div><div class="rs">1 tableta en el desayuno · 30 días</div></div></div>
+            <button class="bdl" onclick="toast('📥 Receta descargada como PDF')"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Descargar receta PDF</button>
+          </div>
+        </div>
+        <div class="rc">
+          <div class="rch"><div class="rct"><div class="rci am">📝</div>Indicaciones del médico</div></div>
+          <div class="rcb" style="padding-top:9px"><p style="font-size:11px;color:var(--i2);line-height:1.6">"Reducir ingesta de grasas saturadas. Ejercicio aeróbico mínimo 30 min, 3 veces por semana. Control en 30 días con nuevo perfil lipídico."</p><p style="font-size:10px;color:var(--i3);margin-top:7px">— Dr. Luis Vargas Ríos · 3 Jun 2025</p></div>
+        </div>
+        <div style="height:16px"></div>
+      </div>
+      <button class="fab" onclick="go2('agenda')" title="Consultar al asistente IA">🤖</button>
+      <div class="bnav">
+        <div class="bni" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
+        <div class="bni" onclick="go2('agenda')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni" onclick="go2('notif')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
+        <div class="bni on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="toast" id="tst"></div>
+
+<script>
+const SCREENS = ['home','agenda','notif','post'];
+
+function go(name) {
+  SCREENS.forEach(s => {
+    document.getElementById('s-'+s).classList.remove('on');
+  });
+  document.getElementById('s-'+name).classList.add('on');
+}
+function go2(name) {
+  go(name);
+}
+function toast(msg) {
+  const t = document.getElementById('tst');
+  t.textContent = msg; t.classList.add('on');
+  setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+// ── CHAT ──────────────────────────────────────────
+
+// Única fuente de verdad para la cita del paciente (evita inconsistencias de fecha)
+const appt = {
+  date: 'lunes 9 de junio',
+  time: '10:30 am',
+  doctor: 'Dr. Luis Vargas Ríos',
+  location: 'Pab. C — Consultorio 214',
+  confirmed: true   // ya viene confirmada desde el inicio (como en la pantalla de Inicio)
+};
+
+function buildSys() {
+  return `Eres el Asistente de Salud RebaDigital del Hospital Nacional Edgardo Rebagliati Martins (EsSalud, Lima, Perú).
+
+Paciente: Roberto Casas, 45 años, asegurado N.° 07-42315.
+Historial:
+- Última consulta: 3 Jun 2025, Dr. Luis Vargas Ríos (Cardiología)
+- Diagnóstico: colesterol LDL elevado (148 mg/dL)
+- Medicación: Atorvastatina 20 mg (noche), AAS 100 mg (desayuno)
+- Cita: ${appt.date}, ${appt.time}, ${appt.location}, con ${appt.doctor}
+- Estado de la cita: ${appt.confirmed ? 'CONFIRMADA. Si el paciente pregunta por ella o quiere "confirmar" de nuevo, indícale amablemente que ya está confirmada, sin pedirle que confirme otra vez.' : 'pendiente de confirmar'}
+- Resultados lab del 3 Jun disponibles en app
+
+Responde siempre en español, cálido, conciso (máximo 3 oraciones). Usa el nombre Roberto. Para citas urgentes o emergencias, recomienda acudir a urgencias del hospital. Usa siempre la fecha exacta de la cita indicada arriba (${appt.date}), nunca otra. Si el paciente pide agendar una cita NUEVA (distinta a la que ya tiene), añade al final exactamente: [TARJETA_CITA]`;
+}
+
+// Slot nuevo que se le ofrece al paciente (distinto de la cita ya confirmada)
+const newSlot = {
+  date: 'lunes 10 de junio',
+  time: '10:30 am',
+  doctor: 'Dr. Luis Vargas Ríos',
+  location: 'Pab. C — Consultorio 214'
+};
+
+let history = [];
+let sending = false;
+
+function time() {
+  return new Date().toLocaleTimeString('es-PE',{hour:'2-digit',minute:'2-digit'});
+}
+function addMsg(role, html, scroll=true) {
+  const area = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg ' + (role==='user'?'usr':'bot');
+  d.innerHTML = `<div class="mb">${html}</div><div class="mt">${time()}</div>`;
+  area.appendChild(d);
+  if (scroll) area.scrollTop = area.scrollHeight;
+  return d;
+}
+function addCard(newAppt) {
+  const area = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  d.innerHTML = `<div class="mb" style="padding:0;overflow:hidden">
+    <div class="acfm">
+      <div class="acft">📅 Cita encontrada</div>
+      <div class="acr"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>${newAppt.date} · ${newAppt.time}</div>
+      <div class="acr"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>${newAppt.doctor}</div>
+      <div class="acr"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>${newAppt.location}</div>
+      <div class="cbts">
+        <button class="btc" onclick="confirmAppt(${JSON.stringify(newAppt).replace(/"/g,'&quot;')})">Confirmar cita ✓</button>
+        <button class="btx">Otro horario</button>
+      </div>
+    </div>
+  </div><div class="mt">${time()}</div>`;
+  area.appendChild(d);
+  area.scrollTop = area.scrollHeight;
+}
+function setQR(btns) {
+  const qrs = document.getElementById('qrs');
+  qrs.innerHTML = '';
+  btns.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'qr'; b.textContent = t;
+    b.onclick = () => reply(t);
+    qrs.appendChild(b);
+  });
+}
+function typewriter(el, text) {
+  return new Promise(res => {
+    const words = text.split(' ');
+    let i = 0;
+    const iv = setInterval(() => {
+      if (i >= words.length) { clearInterval(iv); el.innerHTML = text.replace(/\n/g,'<br>'); res(); return; }
+      el.innerHTML = words.slice(0,i+4).join(' ').replace(/\n/g,'<br>') + '<span class="cur">▋</span>';
+      i += 4;
+      document.getElementById('msgs').scrollTop = 99999;
+    }, 35);
+  });
+}
+async function reply(text) {
+  if (sending) return;
+  addMsg('user', text.replace(/</g,'&lt;'));
+  document.getElementById('qrs').innerHTML = '';
+  history.push({role:'user', content: text});
+  sending = true;
+  const sbtn = document.getElementById('sbtn');
+  sbtn.disabled = true;
+
+  // typing indicator
+  const typingEl = addMsg('bot','<span class="cur">▋</span>');
+  const bubble = typingEl.querySelector('.mb');
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system: buildSys(),
+        messages: history
+      })
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const raw = data?.content?.[0]?.text || '';
+    if (!raw) throw new Error('empty');
+
+    const showCard = raw.includes('[TARJETA_CITA]');
+    const clean = raw.replace('[TARJETA_CITA]','').trim();
+
+    await typewriter(bubble, clean);
+    history.push({role:'assistant', content: clean});
+    if (showCard) setTimeout(() => addCard(newSlot), 400);
+    setTimeout(() => setQR(['❤️ Nueva cita','🧪 Resultados','💊 Medicamentos','📋 Indicaciones']), 500);
+
+  } catch(e) {
+    bubble.innerHTML = '⚠️ El modelo está saturado por demanda. Espera unos segundos e intenta de nuevo.';
+    bubble.style.cssText = 'background:#FEF2F2;border-color:#FCA5A5;color:#991B1B';
+    history.pop();
+    setQR(['🔄 Reintentar','❤️ Nueva cita']);
+    console.error(e);
+  }
+  sending = false;
+  sbtn.disabled = false;
+}
+function send() {
+  const ci = document.getElementById('ci');
+  const v = ci.value.trim();
+  if (!v || sending) return;
+  ci.value = '';
+  reply(v);
+}
+function confirmAppt(slot) {
+  // Actualiza la única fuente de verdad: ahora esta es la cita confirmada
+  appt.date = slot.date;
+  appt.time = slot.time;
+  appt.doctor = slot.doctor;
+  appt.location = slot.location;
+  appt.confirmed = true;
+
+  reply(`Quiero confirmar la cita del ${slot.date} a las ${slot.time} con ${slot.doctor}`);
+  toast(`✅ Cita del ${slot.date} confirmada`);
+}
+</script>
+</body>
+</html>
