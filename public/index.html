@@ -142,6 +142,18 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
 .nd{font-size:11px;color:var(--i3);line-height:1.4}.ntm{font-size:10px;color:var(--i3);margin-top:3px}
 .na{display:inline-block;margin-top:7px;background:var(--gp);color:var(--gd);
   font-size:10px;font-weight:600;padding:3px 9px;border-radius:50px;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+
+/* Tabla de ranking — Módulo 1: priorización por algoritmo */
+.rk-table{margin-top:9px;border:1px solid var(--bd);border-radius:10px;overflow:hidden;background:var(--sf)}
+.rk-row{display:flex;align-items:center;gap:9px;padding:8px 10px;border-bottom:1px solid var(--bd);background:var(--wh)}
+.rk-row:last-child{border-bottom:none}
+.rk-row.rk-me{background:var(--gp)}
+.rk-pos{width:22px;font-size:11px;font-weight:700;color:var(--i3);flex-shrink:0}
+.rk-row.rk-me .rk-pos{color:var(--gd)}
+.rk-info{flex:1;min-width:0}
+.rk-name{font-size:11px;font-weight:600;color:var(--ink)}
+.rk-dx{font-size:9px;color:var(--i3);margin-top:1px}
+.rk-score{font-size:13px;font-weight:700;color:var(--gd);flex-shrink:0}
 .wp{margin:0 14px 10px;background:var(--wh);border-radius:14px;padding:14px;border:1px solid var(--bd)}
 .wph{display:flex;justify-content:space-between;margin-bottom:10px}
 .wpt{font-size:12px;font-weight:600}.wpd{font-size:20px;font-weight:600;color:var(--gd)}
@@ -212,11 +224,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
       </div>
       <div class="sa">
         <div class="stitle">Alertas</div>
-        <div class="abanner" onclick="go2('notif')">
-          <div class="adot"></div>
-          <div><div class="abt">Slot disponible — Cardiología</div>
-          <div class="abs">Se liberó una cita para mañana a las 10:30 am. ¡Tómala antes de que se ocupe!</div></div>
-        </div>
+        <div class="abanner" id="priority-banner" onclick="go2('notif')"></div>
         <div class="stitle">Próxima cita</div>
         <div class="acard">
           <div class="achead">
@@ -284,7 +292,15 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
           <div class="ptl"><span>Solicitud enviada</span><span>Cita confirmada ✓</span></div>
         </div>
         <div class="stitle">Alertas recientes</div>
-        <div class="ni urg"><div class="nic gn">⚡</div><div class="nb"><div class="nt">Slot liberado — ¡Cita disponible!</div><div class="nd">Se liberó una cita de Cardiología para mañana lunes 10 de junio a las 10:30 am con el Dr. Vargas.</div><div class="ntm">hace 5 minutos</div><button class="na" onclick="toast('✅ Cita del 10 Jun confirmada')">Tomar cita ahora →</button></div></div>
+        <div class="ni urg">
+          <div class="nic gn">⚡</div>
+          <div class="nb">
+            <div class="nt">Slot liberado — Priorización automática</div>
+            <div class="nd" id="rank-summary">Calculando prioridad entre pacientes en espera...</div>
+            <div class="rk-table" id="rank-table"></div>
+            <button class="na" id="assign-btn">Asignar al paciente N.°1 →</button>
+          </div>
+        </div>
         <div class="ni alt"><div class="nic am">📋</div><div class="nb"><div class="nt">Resultado de laboratorio disponible</div><div class="nd">Tu hemograma completo del 3 de junio ya está listo para revisar en la app.</div><div class="ntm">hace 2 horas</div><button class="na" onclick="go2('post')">Ver resultados →</button></div></div>
         <div class="ni inf"><div class="nic bl">💊</div><div class="nb"><div class="nt">Receta electrónica generada</div><div class="nd">Tu receta del Dr. Vargas del 3 Jun está disponible. Válida hasta el 3 de julio.</div><div class="ntm">hace 1 día</div><button class="na" onclick="go2('post')">Ver receta →</button></div></div>
         <div style="height:16px"></div>
@@ -365,6 +381,121 @@ function toast(msg) {
   const t = document.getElementById('tst');
   t.textContent = msg; t.classList.add('on');
   setTimeout(() => t.classList.remove('on'), 2600);
+}
+
+// ── MÓDULO 1: ANALÍTICA PREDICTIVA — PRIORIZACIÓN DE LISTA DE ESPERA ──────
+// Simula el algoritmo descrito en el informe: dado un slot liberado por
+// cancelación, calcula qué paciente en lista de espera debería recibirlo,
+// combinando urgencia clínica, tiempo de espera y match de especialidad.
+
+// Lista de espera simulada (dataset de pacientes para Cardiología)
+const waitlist = [
+  { id: 'P-1042', name: 'Roberto Casas',        specialty: 'Cardiología', diagnosis: 'Colesterol LDL elevado (148 mg/dL)', urgency: 2, waitingDays: 28, isCurrentUser: true },
+  { id: 'P-2071', name: 'María Elena Quispe',   specialty: 'Cardiología', diagnosis: 'Control rutinario post-operatorio',    urgency: 1, waitingDays: 41, isCurrentUser: false },
+  { id: 'P-3398', name: 'Jorge Huamán Ttito',   specialty: 'Cardiología', diagnosis: 'Arritmia leve, sin síntomas agudos',   urgency: 2, waitingDays: 15, isCurrentUser: false },
+  { id: 'P-1855', name: 'Lucía Fernández Soto', specialty: 'Cardiología', diagnosis: 'Dolor torácico recurrente',           urgency: 3, waitingDays: 9,  isCurrentUser: false },
+];
+
+// Slot liberado por cancelación (lo que dispara la priorización)
+const releasedSlot = {
+  specialty: 'Cardiología',
+  doctor: 'Dr. Luis Vargas Ríos',
+  date: 'lunes 10 de junio',
+  time: '10:30 am',
+  location: 'Pab. C — Consultorio 214'
+};
+
+// Pesos del modelo (ajustables — esto es lo que en el informe se describe
+// como "modelo entrenado con datos históricos"; aquí se simula con una
+// función de scoring determinística y transparente)
+const WEIGHTS = { urgency: 0.5, waitTime: 0.35, specialtyMatch: 0.15 };
+
+function computePriorityScore(patient, slot) {
+  // Urgencia clínica normalizada (1-3 → 0-1)
+  const urgencyScore = (patient.urgency - 1) / 2;
+
+  // Tiempo de espera normalizado contra el máximo de la lista (0-1)
+  const maxWait = Math.max(...waitlist.map(p => p.waitingDays));
+  const waitScore = patient.waitingDays / maxWait;
+
+  // Match exacto de especialidad (binario)
+  const specialtyScore = patient.specialty === slot.specialty ? 1 : 0;
+
+  const total =
+    urgencyScore     * WEIGHTS.urgency +
+    waitScore        * WEIGHTS.waitTime +
+    specialtyScore   * WEIGHTS.specialtyMatch;
+
+  return { urgencyScore, waitScore, specialtyScore, total };
+}
+
+function rankWaitlist(slot) {
+  return waitlist
+    .filter(p => p.specialty === slot.specialty)
+    .map(p => ({ ...p, score: computePriorityScore(p, slot) }))
+    .sort((a, b) => b.score.total - a.score.total);
+}
+
+// Ejecuta el algoritmo al cargar la página
+const ranking = rankWaitlist(releasedSlot);
+const winner  = ranking[0];
+
+function renderPriorityResult() {
+  const myPosition = ranking.findIndex(p => p.isCurrentUser) + 1; // 1-indexed
+  const me = ranking.find(p => p.isCurrentUser);
+  const iWon = winner.isCurrentUser;
+
+  // 1. Banner de Inicio: muestra la posición real de Roberto en la cola,
+  //    gane o no gane el slot — así el banner siempre refleja el cálculo real.
+  const homeBanner = document.getElementById('priority-banner');
+  if (iWon) {
+    homeBanner.innerHTML = `
+      <div class="adot"></div>
+      <div>
+        <div class="abt">¡Te asignaron un slot! — ${releasedSlot.specialty}</div>
+        <div class="abs">El algoritmo de priorización te ubicó en el puesto 1 de ${ranking.length}. ${releasedSlot.date} · ${releasedSlot.time}. Score: ${(me.score.total*100).toFixed(0)}/100.</div>
+      </div>`;
+  } else {
+    homeBanner.innerHTML = `
+      <div class="adot"></div>
+      <div>
+        <div class="abt">Slot liberado — ${releasedSlot.specialty}</div>
+        <div class="abs">Hay un cupo disponible para ${releasedSlot.date} · ${releasedSlot.time}. Tu posición en la lista de priorización: <strong>${myPosition}° de ${ranking.length}</strong> (score ${(me.score.total*100).toFixed(0)}/100). Toca para ver el detalle.</div>
+      </div>`;
+  }
+  homeBanner.style.display = 'flex';
+
+  // 2. Pantalla de Notificaciones: resumen + tabla de ranking real completa
+  const summary = document.getElementById('rank-summary');
+  if (summary) {
+    summary.textContent = `${releasedSlot.specialty}, ${releasedSlot.date} · ${releasedSlot.time} con ${releasedSlot.doctor}. El algoritmo evaluó a ${ranking.length} pacientes en espera según urgencia clínica (50%), tiempo de espera (35%) y match de especialidad (15%). Tu posición: ${myPosition}° de ${ranking.length}.`;
+  }
+
+  const rankBox = document.getElementById('rank-table');
+  if (rankBox) {
+    rankBox.innerHTML = ranking.map((p, i) => `
+      <div class="rk-row ${p.isCurrentUser ? 'rk-me' : ''}">
+        <div class="rk-pos">${i + 1}°</div>
+        <div class="rk-info">
+          <div class="rk-name">${p.name}${p.isCurrentUser ? ' (tú)' : ''}</div>
+          <div class="rk-dx">${p.diagnosis} · ${p.waitingDays} días esperando</div>
+        </div>
+        <div class="rk-score">${(p.score.total*100).toFixed(0)}</div>
+      </div>
+    `).join('');
+  }
+
+  const assignBtn = document.getElementById('assign-btn');
+  if (assignBtn) {
+    assignBtn.textContent = iWon ? 'Confirmar mi cita →' : `Notificar a ${winner.name} →`;
+    assignBtn.onclick = () => {
+      if (iWon) {
+        toast(`✅ Cita confirmada para ti (score más alto: ${(winner.score.total*100).toFixed(0)}/100)`);
+      } else {
+        toast(`📨 El sistema notificó a ${winner.name}, primer lugar en la cola (score ${(winner.score.total*100).toFixed(0)}/100)`);
+      }
+    };
+  }
 }
 
 // ── CHAT ──────────────────────────────────────────
@@ -520,6 +651,9 @@ function confirmAppt(slot) {
   reply(`Quiero confirmar la cita del ${slot.date} a las ${slot.time} con ${slot.doctor}`);
   toast(`✅ Cita del ${slot.date} confirmada`);
 }
+
+// ── Inicialización: corre el algoritmo de priorización al cargar la app ──
+renderPriorityResult();
 </script>
 </body>
 </html>
