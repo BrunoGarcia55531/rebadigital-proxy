@@ -226,14 +226,17 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
         <div class="stitle">Alertas</div>
         <div class="abanner" id="priority-banner" onclick="go2('notif')"></div>
         <div class="stitle">Próxima cita</div>
-        <div class="acard">
+        <div class="acard" id="appt-card">
           <div class="achead">
-            <div><div class="acsp">Cardiología</div><div class="acdc">Dr. Luis Vargas Ríos</div></div>
-            <div class="acbg">Confirmada</div>
+            <div><div class="acsp" id="appt-specialty">Cardiología</div><div class="acdc" id="appt-doctor">Dr. Luis Vargas Ríos</div></div>
+            <div class="acbg" id="appt-status">Confirmada</div>
           </div>
           <div class="acdt">
-            <div class="acdi"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Lun 9 Jun · 10:30 am</div>
-            <div class="acdi"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Pab. C — Cons. 214</div>
+            <div class="acdi"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span id="appt-date-time">Lun 9 Jun · 10:30 am</span></div>
+            <div class="acdi"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><span id="appt-location">Pab. C — Cons. 214</span></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px">
+            <button style="flex:1;background:var(--g);color:#fff;border:none;border-radius:50px;padding:8px;font-size:12px;font-weight:600;font-family:'DM Sans',sans-serif;cursor:pointer" onclick="showCancelConfirm()">Cancelar cita</button>
           </div>
         </div>
         <div class="stitle">Accesos rápidos</div>
@@ -505,6 +508,7 @@ const appt = {
   date: 'lunes 9 de junio',
   time: '10:30 am',
   doctor: 'Dr. Luis Vargas Ríos',
+  specialty: 'Cardiología',
   location: 'Pab. C — Consultorio 214',
   confirmed: true   // ya viene confirmada desde el inicio (como en la pantalla de Inicio)
 };
@@ -521,7 +525,7 @@ Historial:
 - Estado de la cita: ${appt.confirmed ? 'CONFIRMADA. Si el paciente pregunta por ella o quiere "confirmar" de nuevo, indícale amablemente que ya está confirmada, sin pedirle que confirme otra vez.' : 'pendiente de confirmar'}
 - Resultados lab del 3 Jun disponibles en app
 
-Responde siempre en español, cálido, conciso (máximo 3 oraciones). Usa el nombre Roberto. Para citas urgentes o emergencias, recomienda acudir a urgencias del hospital. Usa siempre la fecha exacta de la cita indicada arriba (${appt.date}), nunca otra. Si el paciente pide agendar una cita NUEVA (distinta a la que ya tiene), añade al final exactamente: [TARJETA_CITA]`;
+Responde siempre en español, cálido, conciso (máximo 3 oraciones). Usa el nombre Roberto. Para citas urgentes o emergencias, recomienda acudir a urgencias del hospital. Usa siempre la fecha exacta de la cita indicada arriba (${appt.date}), nunca otra. Si el paciente pide agendar una cita NUEVA (distinta a la que ya tiene), añade al final exactamente: [TARJETA_CITA]. Si el paciente solicita cancelar su cita, indica que se procesará la cancelación y recomienda agendar una nueva cita cuando pueda.`;
 }
 
 // Slot nuevo que se le ofrece al paciente (distinto de la cita ya confirmada)
@@ -654,6 +658,78 @@ function confirmAppt(slot) {
 
 // ── Inicialización: corre el algoritmo de priorización al cargar la app ──
 renderPriorityResult();
+
+// ── FUNCIONALIDAD DE CANCELACIÓN DE CITAS ──
+
+function updateApptCard() {
+  if (appt.confirmed) {
+    const card = document.getElementById('appt-card');
+    document.getElementById('appt-specialty').textContent = appt.specialty;
+    document.getElementById('appt-doctor').textContent = appt.doctor;
+    document.getElementById('appt-date-time').textContent = `${appt.date} · ${appt.time}`;
+    document.getElementById('appt-location').textContent = appt.location;
+    document.getElementById('appt-status').textContent = 'Confirmada';
+    card.style.display = 'block';
+  } else {
+    document.getElementById('appt-card').style.display = 'none';
+  }
+}
+
+function showCancelConfirm() {
+  if (!appt.confirmed) return;
+  
+  const confirmed = confirm(
+    `¿Deseas cancelar tu cita de ${appt.specialty} con ${appt.doctor}?\n\n` +
+    `📅 ${appt.date} · ${appt.time}\n` +
+    `📍 ${appt.location}\n\n` +
+    `Esta acción liberará el slot para otro paciente en lista de espera.`
+  );
+  
+  if (confirmed) {
+    cancelAppt();
+  }
+}
+
+function cancelAppt() {
+  const specialty = appt.specialty;
+  const date = appt.date;
+  const time = appt.time;
+  
+  // Marcar la cita como cancelada (no eliminada, sino marcada)
+  appt.confirmed = false;
+  
+  // Actualizar la UI
+  updateApptCard();
+  go2('home');
+  
+  // Toast visual
+  toast(`❌ Cita cancelada exitosamente. El slot se ha liberado.`);
+  
+  // Notificar al chat que la cita fue cancelada
+  history.push({
+    role: 'user',
+    content: `Acabo de cancelar mi cita de ${specialty} del ${date} a las ${time}.`
+  });
+  
+  // Mostrar mensaje en el chat
+  setTimeout(() => {
+    if (document.getElementById('msgs')) {
+      const area = document.getElementById('msgs');
+      const d = document.createElement('div');
+      d.className = 'msg bot';
+      d.innerHTML = `<div class="mb">Entendido, Roberto. Tu cita de ${specialty} del ${date} ha sido cancelada. El slot se ha liberado y se asignará a otro paciente en la lista de espera según nuestro algoritmo de priorización. Te enviaremos una notificación al confirmar la asignación. ¿Deseas agendar una nueva cita?</div><div class="mt">${time()}</div>`;
+      area.appendChild(d);
+      area.scrollTop = area.scrollHeight;
+      history.push({
+        role: 'assistant',
+        content: `Entendido, Roberto. Tu cita de ${specialty} del ${date} ha sido cancelada. El slot se ha liberado y se asignará a otro paciente en la lista de espera según nuestro algoritmo de priorización. Te enviaremos una notificación al confirmar la asignación. ¿Deseas agendar una nueva cita?`
+      });
+    }
+  }, 300);
+}
+
+// Inicializar UI de cita
+updateApptCard();
 </script>
 </body>
 </html>
