@@ -526,6 +526,12 @@ function loadAppointmentState() {
 }
 
 function buildSys() {
+  const citaInfo = appt.confirmed 
+    ? `- Cita: ${appt.date}, ${appt.time}, ${appt.location}, con ${appt.doctor}
+- Estado de la cita: CONFIRMADA. Si el paciente pregunta por ella o quiere "confirmar" de nuevo, indícale amablemente que ya está confirmada, sin pedirle que confirme otra vez.`
+    : `- Cita: NO HAY CITA CONFIRMADA (fue cancelada)
+- Estado de la cita: CANCELADA. Si el paciente pregunta por su cita, indícale que no tiene ninguna cita confirmada actualmente y ofrécele agendar una nueva.`;
+
   return `Eres el Asistente de Salud RebaDigital del Hospital Nacional Edgardo Rebagliati Martins (EsSalud, Lima, Perú).
 
 Paciente: Roberto Casas, 45 años, asegurado N.° 07-42315.
@@ -533,11 +539,10 @@ Historial:
 - Última consulta: 3 Jun 2025, Dr. Luis Vargas Ríos (Cardiología)
 - Diagnóstico: colesterol LDL elevado (148 mg/dL)
 - Medicación: Atorvastatina 20 mg (noche), AAS 100 mg (desayuno)
-- Cita: ${appt.date}, ${appt.time}, ${appt.location}, con ${appt.doctor}
-- Estado de la cita: ${appt.confirmed ? 'CONFIRMADA. Si el paciente pregunta por ella o quiere "confirmar" de nuevo, indícale amablemente que ya está confirmada, sin pedirle que confirme otra vez.' : 'pendiente de confirmar'}
+${citaInfo}
 - Resultados lab del 3 Jun disponibles en app
 
-Responde siempre en español, cálido, conciso (máximo 3 oraciones). Usa el nombre Roberto. Para citas urgentes o emergencias, recomienda acudir a urgencias del hospital. Usa siempre la fecha exacta de la cita indicada arriba (${appt.date}), nunca otra. Si el paciente pide agendar una cita NUEVA (distinta a la que ya tiene), añade al final exactamente: [TARJETA_CITA]. Si el paciente solicita cancelar su cita, indica que se procesará la cancelación y recomienda agendar una nueva cita cuando pueda.`;
+Responde siempre en español, cálido, conciso (máximo 3 oraciones). Usa el nombre Roberto. Para citas urgentes o emergencias, recomienda acudir a urgencias del hospital. Si el paciente pide agendar una cita NUEVA (distinta a la que ya tiene), añade al final exactamente: [TARJETA_CITA]. Si el paciente solicita cancelar su cita, indica que se procesará la cancelación y recomienda agendar una nueva cita cuando pueda.`;
 }
 
 // Slot nuevo que se le ofrece al paciente (distinto de la cita ya confirmada)
