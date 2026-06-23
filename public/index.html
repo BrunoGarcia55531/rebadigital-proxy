@@ -242,15 +242,16 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
         <div class="stitle">Accesos rápidos</div>
         <div class="qa">
           <div class="qac" onclick="go2('agenda')"><div class="qai" style="background:#E6FAF5">📅</div><h4>Nueva cita</h4><p>Agenda con IA</p></div>
+          <div class="qac" onclick="go2('quickconsult')"><div class="qai" style="background:#FEE2E2">💬</div><h4>Consulta rápida</h4><p>Chat con doctor</p></div>
           <div class="qac" onclick="go2('post')"><div class="qai" style="background:#EAF0FF">🧪</div><h4>Mis resultados</h4><p>Laboratorio y recetas</p></div>
           <div class="qac" onclick="go2('notif')"><div class="qai" style="background:#FEF3C7">🔔</div><h4>Notificaciones</h4><p>3 alertas nuevas</p></div>
-          <div class="qac" onclick="toast('Historial clínico completo')"><div class="qai" style="background:#FEE2E2">📋</div><h4>Mi historial</h4><p>Historia clínica</p></div>
         </div>
         <div style="height:20px"></div>
       </div>
       <div class="bnav">
         <div class="bni on" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
         <div class="bni" onclick="go2('agenda')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni" onclick="go2('quickconsult')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Consulta</span></div>
         <div class="bni" onclick="go2('notif')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
         <div class="bni" onclick="go2('post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
       </div>
@@ -279,12 +280,39 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
       <div class="bnav">
         <div class="bni" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
         <div class="bni on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni" onclick="go2('quickconsult')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Consulta</span></div>
         <div class="bni" onclick="go2('notif')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
         <div class="bni" onclick="go2('post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
       </div>
     </div>
 
-    <!-- NOTIF -->
+    <!-- CONSULTA RÁPIDA -->
+    <div class="scr" id="s-quickconsult" style="display:flex;flex-direction:column">
+      <div class="chdr">
+        <button class="bbtn" onclick="go2('home')"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <div class="ainfo"><div class="nm">Dr. Luis Vargas Ríos</div><div class="st"><span class="sdot"></span>Disponible ahora · Cardiología</div></div>
+        <div class="aavt">👨‍⚕️</div>
+      </div>
+      <div class="msgs" id="msgs-consult">
+        <div class="msg bot"><div class="mb">Hola Roberto, ¿qué consulta tienes para mí hoy?</div><div class="mt">09:14 am</div></div>
+      </div>
+      <div class="qrs" id="qrs-consult">
+        <button class="qr" onclick="quickReply('Tengo dolores en el pecho')">💔 Dolores en el pecho</button>
+        <button class="qr" onclick="quickReply('Mareos y cansancio')">😵 Mareos</button>
+        <button class="qr" onclick="quickReply('Síntomas respiratorios')">😤 Respiración</button>
+        <button class="qr" onclick="quickReply('Consulta general')">❓ General</button>
+      </div>
+      <div class="cinp">
+        <input class="ci" id="ci-consult" placeholder="Describe tu síntoma..." onkeydown="if(event.key==='Enter'&&!sending)sendConsultation()">
+        <button class="sb" id="sbtn-consult" onclick="sendConsultation()"><svg width="14" height="14" fill="none" stroke="white" stroke-width="2.5" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+      </div>
+      <div class="bnav">
+        <div class="bni" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
+        <div class="bni" onclick="go2('agenda')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Consulta</span></div>
+        <div class="bni" onclick="go2('post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
+      </div>
+    </div>
     <div class="scr" id="s-notif">
       <div class="nhdr"><h2>Notificaciones</h2><p>3 alertas nuevas · Actualizado hace 2 min</p></div>
       <div class="sa">
@@ -311,6 +339,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
       <div class="bnav">
         <div class="bni" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
         <div class="bni" onclick="go2('agenda')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni" onclick="go2('quickconsult')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Consulta</span></div>
         <div class="bni on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
         <div class="bni" onclick="go2('post')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
       </div>
@@ -358,6 +387,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
       <div class="bnav">
         <div class="bni" onclick="go2('home')"><svg fill="currentColor" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg><span>Inicio</span></div>
         <div class="bni" onclick="go2('agenda')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Citas</span></div>
+        <div class="bni" onclick="go2('quickconsult')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><span>Consulta</span></div>
         <div class="bni" onclick="go2('notif')"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span>Alertas</span></div>
         <div class="bni on"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/></svg><span>Historial</span></div>
       </div>
@@ -369,7 +399,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
 <div class="toast" id="tst"></div>
 
 <script>
-const SCREENS = ['home','agenda','notif','post'];
+const SCREENS = ['home','agenda','quickconsult','notif','post'];
 
 function go(name) {
   SCREENS.forEach(s => {
@@ -504,14 +534,30 @@ function renderPriorityResult() {
 // ── CHAT ──────────────────────────────────────────
 
 // Única fuente de verdad para la cita del paciente (evita inconsistencias de fecha)
-let appt = {
-  date: 'lunes 9 de junio',
-  time: '10:30 am',
-  doctor: 'Dr. Luis Vargas Ríos',
-  specialty: 'Cardiología',
-  location: 'Pab. C — Consultorio 214',
-  confirmed: true   // ya viene confirmada desde el inicio (como en la pantalla de Inicio)
-};
+function getInitialAppt() {
+  const today = new Date();
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  
+  const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  
+  const dayName = dayNames[tomorrow.getDay()];
+  const dayNum = tomorrow.getDate();
+  const monthName = monthNames[tomorrow.getMonth()];
+  const dateStr = `${dayName} ${dayNum} de ${monthName}`;
+  
+  return {
+    date: dateStr,
+    time: '10:30 am',
+    doctor: 'Dr. Luis Vargas Ríos',
+    specialty: 'Cardiología',
+    location: 'Pab. C — Consultorio 214',
+    confirmed: true
+  };
+}
+
+let appt = getInitialAppt();
 
 // Funciones para persistencia en localStorage
 function saveAppointmentState() {
@@ -546,12 +592,68 @@ Responde siempre en español, cálido, conciso (máximo 3 oraciones). Usa el nom
 }
 
 // Slot nuevo que se le ofrece al paciente (distinto de la cita ya confirmada)
-const newSlot = {
-  date: 'lunes 10 de junio',
-  time: '10:30 am',
-  doctor: 'Dr. Luis Vargas Ríos',
-  location: 'Pab. C — Consultorio 214'
-};
+function getNewSlot() {
+  const today = new Date();
+  const inTwoDays = new Date(today);
+  inTwoDays.setDate(inTwoDays.getDate() + 2);
+  
+  const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  
+  const dayName = dayNames[inTwoDays.getDay()];
+  const dayNum = inTwoDays.getDate();
+  const monthName = monthNames[inTwoDays.getMonth()];
+  const dateStr = `${dayName} ${dayNum} de ${monthName}`;
+  
+  return {
+    date: dateStr,
+    time: '10:30 am',
+    doctor: 'Dr. Luis Vargas Ríos',
+    location: 'Pab. C — Consultorio 214'
+  };
+}
+
+let newSlot = getNewSlot();
+
+// Otros horarios disponibles - GENERADOS DINÁMICAMENTE BASADOS EN LA FECHA ACTUAL
+function generateAvailableSlots() {
+  const today = new Date();
+  const slots = [];
+  
+  // Mapeo de días de la semana en español
+  const dayNames = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
+  const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  
+  // Generar slots para los próximos 7 días
+  for (let i = 0; i < 7; i++) {
+    const date = new Date(today);
+    date.setDate(date.getDate() + i);
+    
+    const dayName = dayNames[date.getDay()];
+    const dayNum = date.getDate();
+    const monthName = monthNames[date.getMonth()];
+    const dateStr = `${dayName} ${dayNum} de ${monthName}`;
+    
+    // 2 horarios por día
+    slots.push({
+      date: dateStr,
+      time: '09:00 am',
+      doctor: 'Dr. Luis Vargas Ríos',
+      location: 'Pab. C — Consultorio 214'
+    });
+    
+    slots.push({
+      date: dateStr,
+      time: '02:30 pm',
+      doctor: i % 2 === 0 ? 'Dr. Luis Vargas Ríos' : 'Dra. María López',
+      location: i % 2 === 0 ? 'Pab. C — Consultorio 214' : 'Pab. B — Consultorio 108'
+    });
+  }
+  
+  return slots;
+}
+
+let alternativeSlots = generateAvailableSlots();
 
 let history = [];
 let sending = false;
@@ -580,7 +682,7 @@ function addCard(newAppt) {
       <div class="acr"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>${newAppt.location}</div>
       <div class="cbts">
         <button class="btc" onclick="confirmAppt(${JSON.stringify(newAppt).replace(/"/g,'&quot;')})">Confirmar cita ✓</button>
-        <button class="btx">Otro horario</button>
+        <button class="btx" onclick="showAlternativeSlots()">Otro horario</button>
       </div>
     </div>
   </div><div class="mt">${time()}</div>`;
@@ -596,6 +698,28 @@ function setQR(btns) {
     b.onclick = () => reply(t);
     qrs.appendChild(b);
   });
+}
+function showAlternativeSlots() {
+  const area = document.getElementById('msgs');
+  const d = document.createElement('div');
+  d.className = 'msg bot';
+  
+  let slotsHTML = '<div class="mb" style="padding:9px 13px;background:var(--wh);border:1px solid var(--bd);border-bottom-left-radius:3px;color:var(--ink)"><strong>📅 Otros horarios disponibles:</strong><div style="margin-top:10px;display:flex;flex-direction:column;gap:8px">';
+  
+  alternativeSlots.forEach((slot, i) => {
+    slotsHTML += `
+      <div style="padding:10px;background:var(--sf);border-radius:8px;border:1px solid var(--bd);cursor:pointer;transition:all .15s" onclick="confirmAppt(${JSON.stringify(slot).replace(/"/g,'&quot;')})" onmouseover="this.style.background='var(--gp)'" onmouseout="this.style.background='var(--sf)'">
+        <div style="font-weight:600;font-size:12px">${slot.date} · ${slot.time}</div>
+        <div style="font-size:11px;color:var(--i3);margin-top:3px">${slot.doctor} - ${slot.location}</div>
+      </div>
+    `;
+  });
+  
+  slotsHTML += '</div></div>';
+  
+  d.innerHTML = slotsHTML + '<div class="mt">' + time() + '</div>';
+  area.appendChild(d);
+  area.scrollTop = area.scrollHeight;
 }
 function typewriter(el, text) {
   return new Promise(res => {
@@ -660,6 +784,102 @@ function send() {
   if (!v || sending) return;
   ci.value = '';
   reply(v);
+}
+
+// ── CONSULTA RÁPIDA CON DOCTOR ──
+
+let consultHistory = [];
+
+function buildConsultSys() {
+  return `Eres el Dr. Luis Vargas Ríos, cardiólogo especialista del Hospital Nacional Edgardo Rebagliati Martins. 
+Tienes 20 años de experiencia en cardiología.
+
+Paciente: Roberto Casas, 45 años, asegurado EsSalud 07-42315.
+Historial clínico:
+- Última consulta: 3 Jun 2025
+- Diagnóstico: colesterol LDL elevado (148 mg/dL)
+- Medicación actual: Atorvastatina 20 mg (noche), AAS 100 mg (desayuno)
+- Antecedentes: hipertensión controlada, sedentarismo
+
+Esta es una CONSULTA RÁPIDA (no una cita formal). Debes:
+1. Escuchar el síntoma/consulta del paciente
+2. Hacer preguntas de seguimiento si es necesario (máximo 2 preguntas cortas)
+3. Dar recomendación médica breve (máximo 3 oraciones)
+4. Si es grave, recomendar ir a urgencias
+5. Si necesita exámenes, recomendar agendar cita formal
+6. Siempre responder en español, cálido y profesional
+
+NO proporciones diagnósticos definitivos. Siempre sugiere seguimiento formal si es necesario.`;
+}
+
+function addMsgConsult(role, html, scroll=true) {
+  const area = document.getElementById('msgs-consult');
+  const d = document.createElement('div');
+  d.className = 'msg ' + (role==='user'?'usr':'bot');
+  d.innerHTML = `<div class="mb">${html}</div><div class="mt">${time()}</div>`;
+  area.appendChild(d);
+  if (scroll) area.scrollTop = area.scrollHeight;
+  return d;
+}
+
+function setQRConsult(btns) {
+  const qrs = document.getElementById('qrs-consult');
+  qrs.innerHTML = '';
+  btns.forEach(t => {
+    const b = document.createElement('button');
+    b.className = 'qr'; b.textContent = t;
+    b.onclick = () => quickReply(t);
+    qrs.appendChild(b);
+  });
+}
+
+async function quickReply(text) {
+  if (sending) return;
+  addMsgConsult('user', text.replace(/</g,'&lt;'));
+  document.getElementById('qrs-consult').innerHTML = '';
+  consultHistory.push({role:'user', content: text});
+  sending = true;
+  const sbtn = document.getElementById('sbtn-consult');
+  sbtn.disabled = true;
+
+  const typingEl = addMsgConsult('bot','<span class="cur">▋</span>');
+  const bubble = typingEl.querySelector('.mb');
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        system: buildConsultSys(),
+        messages: consultHistory
+      })
+    });
+    if (!res.ok) throw new Error('HTTP '+res.status);
+    const data = await res.json();
+    const raw = data?.content?.[0]?.text || '';
+    if (!raw) throw new Error('empty');
+
+    await typewriter(bubble, raw);
+    consultHistory.push({role:'assistant', content: raw});
+    setTimeout(() => setQRConsult(['❤️ Otro síntoma','📋 Agendar cita','🏥 Ir a urgencias','✅ Listo']), 500);
+
+  } catch(e) {
+    bubble.innerHTML = '⚠️ El modelo está saturado. Espera unos segundos e intenta de nuevo.';
+    bubble.style.cssText = 'background:#FEF2F2;border-color:#FCA5A5;color:#991B1B';
+    consultHistory.pop();
+    setQRConsult(['🔄 Reintentar','💬 Nueva consulta']);
+    console.error(e);
+  }
+  sending = false;
+  sbtn.disabled = false;
+}
+
+function sendConsultation() {
+  const ci = document.getElementById('ci-consult');
+  const v = ci.value.trim();
+  if (!v || sending) return;
+  ci.value = '';
+  quickReply(v);
 }
 function confirmAppt(slot) {
   // Actualiza la única fuente de verdad: ahora esta es la cita confirmada
