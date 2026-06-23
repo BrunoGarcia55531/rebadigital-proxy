@@ -289,7 +289,7 @@ body{font-family:'DM Sans',sans-serif;background:#0D1B2A;min-height:100vh;
       <div class="nhdr"><h2>Notificaciones</h2><p>3 alertas nuevas · Actualizado hace 2 min</p></div>
       <div class="sa">
         <div class="stitle" style="padding-top:10px">Progreso de tu cita</div>
-        <div class="wp" style="margin:0 14px 10px">
+        <div class="wp" id="appt-progress" style="margin:0 14px 10px">
           <div class="wph"><div><div class="wpt">Cita de Cardiología</div><div class="wps">Dr. Vargas · Solicitada hace 28 días</div></div><div><div class="wpd">3</div><div class="wps">días restantes</div></div></div>
           <div class="ptr"><div class="ptf"></div></div>
           <div class="ptl"><span>Solicitud enviada</span><span>Cita confirmada ✓</span></div>
@@ -677,14 +677,19 @@ function confirmAppt(slot) {
 function updateApptCard() {
   if (appt.confirmed) {
     const card = document.getElementById('appt-card');
+    const progress = document.getElementById('appt-progress');
     document.getElementById('appt-specialty').textContent = appt.specialty;
     document.getElementById('appt-doctor').textContent = appt.doctor;
     document.getElementById('appt-date-time').textContent = `${appt.date} · ${appt.time}`;
     document.getElementById('appt-location').textContent = appt.location;
     document.getElementById('appt-status').textContent = 'Confirmada';
     card.style.display = 'block';
+    if (progress) progress.style.display = 'block';
   } else {
-    document.getElementById('appt-card').style.display = 'none';
+    const card = document.getElementById('appt-card');
+    const progress = document.getElementById('appt-progress');
+    card.style.display = 'none';
+    if (progress) progress.style.display = 'none';
   }
 }
 
