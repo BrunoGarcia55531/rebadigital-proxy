@@ -504,7 +504,7 @@ function renderPriorityResult() {
 // ── CHAT ──────────────────────────────────────────
 
 // Única fuente de verdad para la cita del paciente (evita inconsistencias de fecha)
-const appt = {
+let appt = {
   date: 'lunes 9 de junio',
   time: '10:30 am',
   doctor: 'Dr. Luis Vargas Ríos',
@@ -512,6 +512,18 @@ const appt = {
   location: 'Pab. C — Consultorio 214',
   confirmed: true   // ya viene confirmada desde el inicio (como en la pantalla de Inicio)
 };
+
+// Funciones para persistencia en localStorage
+function saveAppointmentState() {
+  localStorage.setItem('appt_state', JSON.stringify(appt));
+}
+
+function loadAppointmentState() {
+  const saved = localStorage.getItem('appt_state');
+  if (saved) {
+    appt = JSON.parse(saved);
+  }
+}
 
 function buildSys() {
   return `Eres el Asistente de Salud RebaDigital del Hospital Nacional Edgardo Rebagliati Martins (EsSalud, Lima, Perú).
@@ -651,13 +663,14 @@ function confirmAppt(slot) {
   appt.doctor = slot.doctor;
   appt.location = slot.location;
   appt.confirmed = true;
+  
+  // Guardar en localStorage
+  saveAppointmentState();
+  updateApptCard();
 
   reply(`Quiero confirmar la cita del ${slot.date} a las ${slot.time} con ${slot.doctor}`);
   toast(`✅ Cita del ${slot.date} confirmada`);
 }
-
-// ── Inicialización: corre el algoritmo de priorización al cargar la app ──
-renderPriorityResult();
 
 // ── FUNCIONALIDAD DE CANCELACIÓN DE CITAS ──
 
@@ -698,6 +711,9 @@ function cancelAppt() {
   // Marcar la cita como cancelada (no eliminada, sino marcada)
   appt.confirmed = false;
   
+  // Guardar en localStorage
+  saveAppointmentState();
+  
   // Actualizar la UI
   updateApptCard();
   go2('home');
@@ -728,7 +744,9 @@ function cancelAppt() {
   }, 300);
 }
 
-// Inicializar UI de cita
+// ── Inicialización: corre el algoritmo de priorización al cargar la app ──
+loadAppointmentState();
+renderPriorityResult();
 updateApptCard();
 </script>
 </body>
